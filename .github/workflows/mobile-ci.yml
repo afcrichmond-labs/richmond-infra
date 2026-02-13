@@ -1,0 +1,29 @@
+name: Mobile CI/CD
+on:
+  pull_request:
+    paths: ["mobile/**"]
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+      - name: Install dependencies
+        run: cd mobile && npm ci
+      - name: Run tests
+        run: cd mobile && npm test
+
+  build-ios:
+    needs: test
+    runs-on: macos-latest
+    steps:
+      - name: Build iOS
+        run: cd mobile && npx fastlane ios build
+      - name: Deploy to TestFlight
+        if: github.ref == 'refs/heads/main'
+        run: cd mobile && npx fastlane ios beta
