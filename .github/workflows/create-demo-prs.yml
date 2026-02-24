@@ -9,28 +9,15 @@ permissions:
 jobs:
   create-prs:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Create Reserved Instances PR and request Roy's review
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: PR 1 - Reserved Instances
         run: |
           gh pr create \
             --repo afcrichmond-labs/richmond-infra \
-            --title "infra: Terraform config for AWS 1-year Reserved Instances (ENG-57)" \
-            --body "$(cat <<'BODY'
-## Summary
-Finance approved the AWS Reserved Instance purchase. This PR provisions Terraform resources before the Feb 28 deadline.
-
-## Savings
-- 3x m6i.2xlarge (API servers) + 2x r6g.xlarge (DB replicas)
-- **$2,340/mo savings** vs on-demand
-
-## ⚠️ Needs Roy's sign-off by Thursday EOD
-Finance processes PO this billing cycle. Missing the window = one extra month on-demand.
-
-**Jira:** ENG-57 | **Notion:** AWS RI Decision Log
-BODY
-)" \
+            --title "infra: Terraform for AWS 1-year Reserved Instances (ENG-57)" \
+            --body "Finance approved. 3x m6i.2xlarge + 2x r6g.xlarge reserved. Saves 2340/mo. Needs Roy sign-off before Thursday EOD or we miss the billing window. Jira: ENG-57" \
             --head infra/aws-reserved-instances-eng57 \
             --base main \
             --reviewer roy-afcrichmond || true
